@@ -37,7 +37,7 @@ struct DetailView: View {
                 .font(.title)
                 .foregroundColor(.secondary)
             
-            Text(book.reviewDate?.formatted(date: .abbreviated, time: .omitted) ?? "Unknown Date")
+            Text("Reviewed on \(book.reviewDate?.formatted(date: .abbreviated, time: .omitted) ?? "Unknown Date")")
                 .foregroundColor(.secondary)
             
             Text(book.review ?? "No Review")
@@ -68,7 +68,7 @@ struct DetailView: View {
     func deleteBook(){
         moc.delete(book)
         
-//        try? moc.save()
+        try? moc.save()
         dismiss()
     }
 }

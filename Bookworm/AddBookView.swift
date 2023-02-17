@@ -20,7 +20,7 @@ struct AddBookView: View {
     @State private var emptyAlert:Bool = false
     @FocusState private var editorFocused:Bool
     
-    let genres = ["Fantasy","Thriller","Romance","Children","Horror","Mystery"]
+    let genres = ["Fantasy","Thriller","Romance","Kids","Horror","Mystery"]
     
     var body: some View {
         NavigationView{
