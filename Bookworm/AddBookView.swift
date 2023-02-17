@@ -17,6 +17,7 @@ struct AddBookView: View {
     @State private var genre = ""
     @State private var review = ""
     @State private var rating = 3
+    @FocusState private var editorFocused:Bool
     
     let genres = ["Fantasy","Thriller","Romance","Children","Horror","Mystery"]
     
@@ -37,13 +38,20 @@ struct AddBookView: View {
                 }
                 
                 Section{
-                    TextEditor(text: $review)
-                    
-                    Picker("Rating",selection: $rating){
-                        ForEach(0..<6){
-                            Text(String($0))
+                    ZStack(alignment: .topLeading){
+                        TextEditor(text: $review)
+                            .focused($editorFocused)
+                            .frame(minHeight:64)
+                        if(!editorFocused && review.isEmpty){
+                            Text("Write your review")
+                                .foregroundColor(Color(uiColor: .placeholderText))
+                                .padding(.top,10)
+                                .padding(.leading,5)
+                                .allowsHitTesting(false)
                         }
                     }
+                    RatingView(rating:$rating,label:"Rating")
+                    
                 }header:{
                     Text("Write a review")
                 }

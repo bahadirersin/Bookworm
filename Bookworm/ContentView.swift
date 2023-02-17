@@ -10,27 +10,60 @@ import SwiftUI
 struct ContentView: View {
     
     @Environment(\.managedObjectContext) var moc
-    @FetchRequest(sortDescriptors: []) var books:FetchedResults<Book>
+    @FetchRequest(sortDescriptors: [
+        SortDescriptor(\.title),
+        SortDescriptor(\.author)]) var books:FetchedResults<Book>
     
     @State private var showAddScreen = false
     
     var body: some View {
         NavigationView{
-            Text("\(books.count)")
-                .toolbar{
-                ToolbarItem(placement: .navigationBarTrailing){
-                    Button{
-                        showAddScreen = true
+            List{
+                ForEach(books){ book in
+                    NavigationLink{
+                        DetailView(book: book)
                     }label:{
-                        Label("Add Book", systemImage: "plus")
+                        HStack{
+                            EmojiRatingView(rating: book.rating)
+                                .font(.largeTitle)
+                            VStack{
+                                Text(book.title ?? "Uknown Book")
+                                    .font(.headline)
+                                Text(book.author ?? "Unknown Author")
+                                    .foregroundColor(.secondary)
+                            }
+                        }
                     }
+                }.onDelete(perform: deleteBooks)
+            }
+            .toolbar{
+            ToolbarItem(placement: .navigationBarTrailing){
+                Button{
+                    showAddScreen = true
+                }label:{
+                    Label("Add Book", systemImage: "plus")
                 }
             }
-            .navigationTitle("Bookworm")
-            .sheet(isPresented: $showAddScreen){
-                AddBookView()
-            }
+                
+                ToolbarItem(placement:.navigationBarLeading){
+                    EditButton()
+                }
+                
         }
+        .navigationTitle("Bookworm")
+        .sheet(isPresented: $showAddScreen){
+            AddBookView()
+        }
+        }
+    }
+    
+    func deleteBooks(at offsets:IndexSet){
+        for offset in offsets{
+            let book = books[offset]
+            moc.delete(book)
+        }
+        
+        try? moc.save()
     }
 }
 
