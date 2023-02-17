@@ -17,6 +17,7 @@ struct AddBookView: View {
     @State private var genre = ""
     @State private var review = ""
     @State private var rating = 3
+    @State private var emptyAlert:Bool = false
     @FocusState private var editorFocused:Bool
     
     let genres = ["Fantasy","Thriller","Romance","Children","Horror","Mystery"]
@@ -58,18 +59,27 @@ struct AddBookView: View {
                 
                 Section{
                     Button("Save"){
-                        let newBook = Book(context: moc)
-                        newBook.id = UUID()
-                        newBook.title = title
-                        newBook.author = author
-                        newBook.review = review
-                        newBook.rating = Int16(rating)
-                        newBook.genre = genre
-                        
-                        try? moc.save()
-                        dismiss()
+                        if(title.trimmingCharacters(in: .whitespaces).isEmpty || author.trimmingCharacters(in: .whitespaces).isEmpty || review.trimmingCharacters(in: .whitespaces).isEmpty || genre.trimmingCharacters(in: .whitespaces).isEmpty ){
+                            emptyAlert = true
+                        }else{
+                            let newBook = Book(context: moc)
+                            newBook.id = UUID()
+                            newBook.title = title
+                            newBook.author = author
+                            newBook.review = review
+                            newBook.rating = Int16(rating)
+                            newBook.genre = genre
+                            newBook.reviewDate = Date.now
+                            
+                            try? moc.save()
+                            dismiss()
+                        }
                     }
                 }.navigationTitle("Add Book")
+            }.alert("Missing Details",isPresented: $emptyAlert){
+                Button("OK",role:.none){ }
+            }message: {
+                Text("Please fill out all fields to save your review")
             }
             
         }
